@@ -92,6 +92,7 @@ function pagination($data){
     
     $start = ($currentBlock - 1) * PAGE__BCOUNT + 1;
     $end = $start + PAGE__BCOUNT - 1;
+    $end = $end > $currentBlock ? $currentBlock : $end;
 
     $prevNo = $start - 1;
     $prev = $prevNo >= 1;
@@ -101,4 +102,26 @@ function pagination($data){
     $data = array_slice($data, ($page - 1) * PAGE__COUNT, PAGE__COUNT);
     
     return (object)compact("data", "start", "end", "prevNo", "prev", "nextNo", "next");
+}
+
+function fileinfo($filename){
+    $filepath = UPLOAD."/$filename";
+    if(is_file($filepath)){
+        $name = substr($filename, strpos($filename, "-") + 1);
+        $size = number_format((filesize($filepath) / 1024), 2);
+        $type = mime_content_type($filepath);
+        return (object)compact("name", "size", "type");
+    }
+}
+
+function upload_base64($base64){
+    $temp = explode("base64,", $base64);
+    $data = base64_decode($temp[1]);
+    $temp = explode("image/", $temp[0]);
+    $type = $temp[1];
+
+    $filename = time().".$type";
+    
+    file_put_contents(UPLOAD."/$filename", $data);
+    return $filename;
 }

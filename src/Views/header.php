@@ -9,6 +9,7 @@
     <script src="/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/common.js"></script>
 </head>
 <body>
     <!-- 헤더 영역 -->
@@ -52,7 +53,7 @@
             </div>
             <div class="header-util d-none d-lg-flex">
                 <?php if(user()):?>
-                    <a href="#"><?=user()->user_name?>(<?=user()->point?>)</a>
+                    <a href="#"><?=user()->user_name?>(<?=user()->point?>p)</a>
                     <a href="/logout">로그아웃</a>
                 <?php else:?>
                     <a href="/sign-in">로그인</a>
@@ -70,7 +71,7 @@
             <div class="aside-util d-between">
                 <?php if(user()):?>
                     <div class="text-muted text-ellipsis">
-                        <?=user()->user_name?>(<?=user()->point?>)
+                        <?=user()->user_name?>(<?=user()->point?>p)
                     </div>
                     <div>
                         <a href="/logout">로그아웃</a>

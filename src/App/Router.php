@@ -20,7 +20,7 @@ class Router {
             $regex = preg_replace("/{[^\/]+}/", "([^/]+)", $url);
             $regex = preg_replace("/\//", "\\/", $regex);
             if(preg_match("/^{$regex}$/", $currentURL, $matches)){
-                if($permission && $permission == "user" && !user()) back("로그인 후 이용하실 수 있습니다.");
+                if($permission && $permission == "user" && (!user() || admin())) back("회원만 이용할 수 있습니다.");
                 if($permission && $permission == "company" && !company()) back("권한이 없습니다.");
                 if($permission && $permission == "admin" && !admin()) back("권한이 없습니다.");
                 unset($matches[0]);

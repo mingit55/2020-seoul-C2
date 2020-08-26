@@ -5,6 +5,7 @@ class Workspace {
 
         this.canvas = $("#workspace > canvas")[0];          // 공용 캔버스
         this.ctx = this.canvas.getContext("2d");
+        this.ctx.fillStyle = "#fff";
 
         this.sliced = document.createElement("canvas");     // 자르기용 캔버스
         this.sliced.width = this.canvas.width;
@@ -36,7 +37,7 @@ class Workspace {
     }
 
     render(){
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         this.papers.forEach(paper => {
             paper.update();
@@ -110,5 +111,10 @@ class Workspace {
                 this.app.makeContextMenu(e.pageX, e.pageY, menus)
             });
         });
+    }
+
+    getImageUrl(){
+        this.selectedTool && this.selectedTool.unselectAll();
+        return this.canvas.toDataURL("image/jpeg");
     }
 }

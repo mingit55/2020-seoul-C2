@@ -1,9 +1,11 @@
 class App {
     constructor(){
-        new IDB("seoul", ["papers", "inventory"], conn => {
+        new IDB("seoul", ["papers", "inventory"], async conn => {
             this.db = conn;
             this.ws = new Workspace(this);
-            
+            this.inventory = await (fetch("/api/inventory").then(res => res.json()));
+
+
             this.helpTexts = {
                 select: `선택 도구는 가장 기본적인 도구로써, 작업 영역 내의 한지를 선택할 수 있게 합니다. 마우스 클릭으로 한지를 활성화하여 이동시킬 수 있으며, 선택된 한지는 삭제 버튼으로 삭제시킬 수 있습니다.`,
                 spin: `회전 도구는 작업 영역 내의 한지를 회전할 수 있는 도구입니다. 마우스 더블 클릭으로 회전하고자 하는 한지를 선택하면, 좌우로 마우스를 끌어당겨 회전시킬 수 있습니다. 회전한 뒤에는 우 클릭의 콘텍스트 메뉴로 '확인'을 눌러 한지의 회전 상태를 작업 영역에 반영할 수 있습니다.`,
@@ -65,8 +67,7 @@ class App {
 
         // 한지 리스트 모달
         $("[data-target='#list-modal']").on("click", async e => {
-            let inventory = await this.db.getAll("inventory")
-            let htmlItems = inventory.map(item => `<div class="paper-item col-lg-4 mb-4" data-id="${item.id}">
+            let htmlItems = this.inventory.map(item => `<div class="paper-item col-lg-4 mb-4" data-id="${item.id}">
                                                         <div class="border">
                                                             <img src="${item.image}" alt="한지 이미지" class="fit-cover hx-200">
                                                             <div class="p-3">
@@ -77,7 +78,7 @@ class App {
                                                                 </div>
                                                                 <div class="fx-n2">
                                                                     <span class="text-muted">소지 수량</span>
-                                                                    <span class="fx-2 ml-2">${item.count}개</span>
+                                                                    <span class="fx-2 ml-2">${item.count > 0 ? item.count + "개" : "∞"}</span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -86,7 +87,7 @@ class App {
             $("#list-modal .row").html(htmlItems.length > 0 ? htmlItems.join('') : `<div class="col-12 py-5 text-center">구매한 한지가 없습니다.</div>`);
         });
         $("#list-modal").on("click", ".paper-item", async e => {
-            let paper = await this.db.get("inventory", parseInt(e.currentTarget.dataset.id));
+            let paper = this.inventory.find(paper => paper.id == e.currentTarget.dataset.id);
             let width = paper.width_size;
             let height = paper.height_size;
             let imageURL = paper.image;
@@ -94,10 +95,13 @@ class App {
 
             this.ws.addPaper({width, height, imageURL});
 
-            if(paper.count <= 0) {
-                this.db.delete("inventory", paper.id);
+            if(paper.count === 0) {
+                $.post("/delete/inventory/" + paper.id)
+                this.inventory = this.inventory.filter(item => item !== paper);
+                // this.db.delete("inventory", paper.id);
             } else {
-                this.db.put("inventory", paper);
+                $.post("/update/inventory/" + paper.id, paper);
+                // this.db.put("inventory", paper);
             }
 
             $("#list-modal").modal("hide");
@@ -153,6 +157,13 @@ class App {
             let type = this.findItems[this.findIdx].parentElement.dataset.type;
             $(".help > input").attr("checked" , false);
             $("#tab-" + type).attr("checked", true);
+        });
+
+        $("#entry").on("submit", e => {
+            e.preventDefault();
+            console.log(this.ws, this.ws.getImageUrl);
+            $("#image").val( this.ws.getImageUrl() );
+            $("#entry")[0].submit();
         });
     }    
 }

@@ -28,9 +28,27 @@
         <div class="cell-70">제목</div>
         <div class="cell-20">작성일</div>
     </div>
+    <?php foreach($notices->data as $notice): ?>
+        <div class="t-row" onclick="location.href = '/notices/<?=$notice->id?>';">
+            <div class="cell-10"><?= $notice->id ?></div>
+            <div class="cell-70"><?= enc($notice->title) ?></div>
+            <div class="cell-20"><?= $notice->created_at ?></div>
+        </div>
+    <?php endforeach;?>
+    <div class="d-flex justify-content-center align-items-center mt-5">
+        <a class="icon bg-red text-white mx-1" href="/notices?page=<?=$notices->prevPage?>" <?= $notices->prev ? "" : "disabled" ?>>
+            <i class="fa fa-angle-left"></i>
+        </a>
+        <?php for($i = $notices->start; $i <= $notices->end; $i++):?>
+        <a class="icon bg-red text-white mx-1" href="/notices?page=<?=$i?>"><?=$i?></a>
+        <?php endfor;?>
+        <a class="icon bg-red text-white mx-1" href="/notices?page=<?=$notices->nextPage?>" <?= $notices->next ? "" : "disabled" ?>>
+            <i class="fa fa-angle-right"></i>
+        </a>
+    </div>
 </div>
 
-<form action="/insert/notices" id="notice-modal" class="modal fade" method="post" enctype="multipart/form-data">
+<form action="/insert/notice" id="notice-modal" class="modal fade" method="post" enctype="multipart/form-data">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -47,7 +65,7 @@
                 </div>
                 <div class="form-group">
                     <label>첨부 파일</label>
-                    <input type="files" name="files[]" mutliple>
+                    <input type="file" name="files[]" class="form-control" multiple>
                 </div>
             </div>
             <div class="modal-footer text-right">

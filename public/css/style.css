@@ -968,14 +968,14 @@ aside {
     .company > img:nth-child(8) { animation-delay: calc(-24s + 3s * 6); }
     
     @keyframes company {
-        0%      { margin-left: -100%; }
-        10.41%  { margin-left: -100%; }
+        0%      { margin-left: -100%; } /* 0초 */ 
+        10.41%  { margin-left: -100%; } /* 2초 */ 
 
-        12.50%  { margin-left: 0; }
-        22.91%  { margin-left: 0; }
+        12.50%  { margin-left: 0; } /* 3초 */
+        22.91%  { margin-left: 0; } /* 5초 */
 
-        25%     { margin-left: 100%; }
-        100%    { margin-left: 100%; }
+        25%     { margin-left: 100%; } /* 6초 */
+        100%    { margin-left: 100%; } /* 24초 */
     }
 
     #pause-company:checked ~ .company > img { animation-play-state: paused; }

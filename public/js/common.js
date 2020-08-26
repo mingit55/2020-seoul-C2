@@ -59,12 +59,12 @@ class IDB {
 }
 
 class HashModule {
-    constructor(rootSelector, examList = []){
+    constructor(rootSelector, examList = [], init = []){
         this.$root = $(rootSelector);
         this.name = this.$root.data("name");    // input에 등록할 이름
         this.hasExamples = [];                  // 가지고 있는 예시목록
         this.showExamples = [];                 // 보여주고 있는 예시목록
-        this.tags = [];                         // 사용자가 입력한 해시태그
+        this.tags = init;                       // 사용자가 입력한 해시태그
         this.focusIndex = null;                 // 활성화된 예시 인덱스
 
         examList.forEach(item => {
@@ -73,6 +73,7 @@ class HashModule {
         
         this.init();
         this.setEvents();
+        this.render();
     }
 
     get $container(){
@@ -209,5 +210,12 @@ class HashModule {
 }
 
 $(function(){
-
+    $(".custom-file-input").on("change" , e => {
+        let $sibling = $(e.target).siblings(".custom-file-label");
+        if(e.target.files.length > 0) {
+            $sibling.text(e.target.files.length + "개의 파일");
+        } else {
+            $sibling.text("파일을 선택하세요");
+        }
+    });
 });

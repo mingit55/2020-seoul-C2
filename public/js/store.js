@@ -1,7 +1,7 @@
 class Paper {
     constructor({id, image, paper_name, company_name, width_size, height_size, point, hashTags}){
         this.id = id;
-        this.image = image;
+        this.image = "/uploads/" + image;
         this.paper_name = paper_name;
         this.company_name = company_name;
         this.width_size = width_size;
@@ -87,9 +87,10 @@ class App {
     constructor(){
         new IDB("seoul", ["papers", "inventory"], async db =>{
             this.db = db;
-            let papers = await this.db.getAll("papers");
-            this.papers = papers.length > 0 ? papers : await this.init();
-            this.papers = this.papers.map(paper => new Paper(paper));
+            // let papers = await this.db.getAll("papers");
+            // this.papers = papers.length > 0 ? papers : await this.init();
+            // this.papers = this.papers.map(paper => new Paper(paper));
+            this.papers = (await (await fetch("/api/papers")).json()).map(paper => new Paper(paper));
             this.cartList = [];
             
             this.$store = $("#store");
@@ -145,6 +146,9 @@ class App {
         if(viewList.length === 0) this.$cart.html(`<div class="py-5 text-center text-muted">장바구니에 담긴 상품이 없습니다.</div>`);
 
         $("#total-price").text(this.totalPoint);
+        $("#buyList").val(JSON.stringify(this.cartList.map(({id, buyCount}) => ({id, buyCount}))));
+        $("#totalPoint").val(this.totalPoint);
+        $("#totalCount").val(this.totalCount);
     }
 
     // JSON 파일을 모두 IDB에 업로드
@@ -183,26 +187,26 @@ class App {
 
         // 한지 등록
         $("#add-modal").on("submit", e => {
-            e.preventDefault();
-            let paper = Array.from($(e.target).find("input[name]"))
-                .reduce((obj, input) => {
-                    obj[input.name] = input.value;
-                    return obj;
-                }, {});
-            paper.width_size = parseInt(paper.width_size);
-            paper.height_size = parseInt(paper.height_size);
-            paper.point = parseInt(paper.point);
-            paper.hashTags = JSON.parse(paper.hashTags);
-            this.db.add("papers", paper)
-                .then(id => {
-                    // 마무리
-                    paper.id = id;
-                    $(e.target).find("input").val("");
-                    $(e.target).modal("hide");
-                    this.papers.push( new Paper(paper) );
-                    this.tags.push(...paper.hashTags);
-                    this.renderStore();
-                })
+            // e.preventDefault();
+            // let paper = Array.from($(e.target).find("input[name]"))
+            //     .reduce((obj, input) => {
+            //         obj[input.name] = input.value;
+            //         return obj;
+            //     }, {});
+            // paper.width_size = parseInt(paper.width_size);
+            // paper.height_size = parseInt(paper.height_size);
+            // paper.point = parseInt(paper.point);
+            // paper.hashTags = JSON.parse(paper.hashTags);
+            // this.db.add("papers", paper)
+            //     .then(id => {
+            //         // 마무리
+            //         paper.id = id;
+            //         $(e.target).find("input").val("");
+            //         $(e.target).modal("hide");
+            //         this.papers.push( new Paper(paper) );
+            //         this.tags.push(...paper.hashTags);
+            //         this.renderStore();
+            //     })
 
         });
 
@@ -243,34 +247,34 @@ class App {
 
         // 구매하기
         $("#btn-accept").on("click", e => {
-            if(this.cartList.length === 0) {
-                alert("장바구니에 담긴 상품이 없습니다.");
-                return;
-            }
+            // if(this.cartList.length === 0) {
+            //     alert("장바구니에 담긴 상품이 없습니다.");
+            //     return;
+            // }
 
-            alert(`총 ${this.totalCount}개의 한지가 구매되었습니다.`);
-            this.cartList.forEach(async cartItem => {
-                let hasItem = await this.db.get("inventory", cartItem.id);
-                if(hasItem){
-                    hasItem.buyCount += cartItem.buyCount;
-                    this.db.put("inventory", hasItem);
-                } else {
-                    this.db.add("inventory", {
-                        id: cartItem.id,
-                        image: cartItem.image,
-                        paper_name: cartItem.paper_name,
-                        width_size: cartItem.width_size,
-                        height_size: cartItem.height_size,
-                        count: cartItem.buyCount,
-                    });
-                }
-                cartItem.buyCount = 0;
-                cartItem.updateCart();
-                cartItem.updateStore();
-            });
-            this.cartList = [];
-            this.renderStore();
-            this.renderCart();
+            // alert(`총 ${this.totalCount}개의 한지가 구매되었습니다.`);
+            // this.cartList.forEach(async cartItem => {
+            //     let hasItem = await this.db.get("inventory", cartItem.id);
+            //     if(hasItem){
+            //         hasItem.buyCount += cartItem.buyCount;
+            //         this.db.put("inventory", hasItem);
+            //     } else {
+            //         this.db.add("inventory", {
+            //             id: cartItem.id,
+            //             image: cartItem.image,
+            //             paper_name: cartItem.paper_name,
+            //             width_size: cartItem.width_size,
+            //             height_size: cartItem.height_size,
+            //             count: cartItem.buyCount,
+            //         });
+            //     }
+            //     cartItem.buyCount = 0;
+            //     cartItem.updateCart();
+            //     cartItem.updateStore();
+            // });
+            // this.cartList = [];
+            // this.renderStore();
+            // this.renderCart();
         });
     }
 }
