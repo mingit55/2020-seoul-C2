@@ -34,8 +34,8 @@
     <div class="title">나의 작품</div>
     <div class="row mt-4">
         <?php foreach($myList as $artwork):?>
-        <div class="col-lg-3" onclick="location.href='/artworks/<?=$artwork->id?>'">
-            <div class="border bg-white">
+        <div class="col-lg-3 position-relative">
+            <div class="border bg-white" onclick="location.href='/artworks/<?=$artwork->id?>'" <?= $artwork->rm_reason ? "disabled" : "" ?>>
                 <img src="/uploads/<?=$artwork->image?>" alt="작품 이미지" class="hx-200 fit-contain p-3">
                 <div class="p-3">
                     <div class="d-between mt-3">
@@ -59,6 +59,12 @@
                     </div>
                 </div>
             </div>
+            <?php if($artwork->rm_reason):?>
+                <div class="position-center text-center">
+                    <span class="fx-n2 text-muted">삭제 사유</span>
+                    <p class="text-red fx-n1"><?= $artwork->rm_reason ?></p>
+                </div>
+            <?php endif;?>
         </div>
         <?php endforeach;?>
     </div>

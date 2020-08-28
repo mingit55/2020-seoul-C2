@@ -110,6 +110,7 @@ class ViewController {
                             FROM artworks A 
                             LEFT JOIN users U ON U.id = A.uid
                             LEFT JOIN (SELECT ROUND(AVG(score)) score, aid FROM scores GROUP BY aid) S ON S.aid = A.id
+                            WHERE A.rm_reason IS NULL
                             ORDER BY id DESC"));
         global $tags;
         $tags = isset($_GET['tags']) ? json_decode($_GET['tags']) : [];
@@ -131,7 +132,7 @@ class ViewController {
                             FROM artworks A 
                             LEFT JOIN users U ON U.id = A.uid
                             LEFT JOIN (SELECT ROUND(AVG(score)) score, aid FROM scores GROUP BY aid) S ON S.aid = A.id
-                            WHERE A.created_at >= ?
+                            WHERE A.created_at >= ? AND A.rm_reason IS NULL
                             ORDER BY score DESC
                             LIMIT 0, 4", [$checkTime])),
             "artworks" => pagination($artworks),
@@ -140,7 +141,6 @@ class ViewController {
     }
 
     function artwork($id){
-
         $artwork = DB::fetch("SELECT DISTINCT A.*, U.id uid, user_name, user_email, U.image user_image, type, IFNULL(score, 0) score, M.aid reviewed
                             FROM artworks A
                             LEFT JOIN users U ON U.id = A.uid
@@ -148,6 +148,9 @@ class ViewController {
                             LEFT JOIN (SELECT aid FROM scores WHERE uid = ?) M ON M.aid = A.id
                             WHERE A.id = ?", [user()->id, $id]);
         $artwork->hashTags = json_decode($artwork->hashTags);
+
+        if(!$artwork || $artwork->rm_reason) 
+            back("대상이 존재하지 않습니다.");
         
         view("artwork", compact("artwork"));
     }

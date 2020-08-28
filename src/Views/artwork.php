@@ -39,6 +39,11 @@
                     <a href="/delete/artwork/<?= $artwork->id ?>" class="btn-bordered">삭제하기</a>
                 </div>
             <?php endif;?>
+            <?php if(admin()):?>
+                <div class="mt-3">
+                    <button class="btn-bordered" data-target="#delete-modal" data-toggle="modal">삭제하기</button>
+                </div>
+            <?php endif;?>
         </div>
     </div>
     <?php if(!$artwork->reviewed && $artwork->uid !== user()->id):?>
@@ -98,6 +103,25 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-filled">수정 완료</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<form action="/delete-admin/artwork/<?=$artwork->id?>" id="delete-modal" class="modal fade" method="post">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="fx-4">삭제하기</div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>삭제 사유</label>
+                    <textarea name="rm_reason" id="rm_reason" cols="30" rows="10" class="form-control" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-filled">삭제하기</button>
             </div>
         </div>
     </div>

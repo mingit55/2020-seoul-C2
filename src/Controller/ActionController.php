@@ -222,7 +222,7 @@ class ActionController {
 
     function updateArtwork($id){
         $artwork = DB::find("artworks", $id);
-        if(!$artwork || $artwork->uid !== user()->id) back("삭제할 대상을 찾을 수 없습니다.");
+        if(!$artwork || $artwork->uid !== user()->id) back("수정할 대상을 찾을 수 없습니다.");
 
         checkEmpty();
         extract($_POST);       
@@ -240,5 +240,17 @@ class ActionController {
 
         DB::query("INSERT INTO scores (uid, aid, score) VALUES (?, ?, ?)", [user()->id, $artwork->id, $score]);
         go("/artworks/$aid");
+    }
+
+    function deleteArtworkByAdmin($id){
+        $artwork = DB::find("artworks", $id);
+        if(!$artwork) back("삭제할 대상을 찾을 수 없습니다.");
+
+        checkEmpty();
+        extract($_POST);
+
+        DB::query("UPDATE artworks SET rm_reason = ? WHERE id = ?", [$rm_reason, $id]);
+        
+        go("/artworks", "삭제되었습니다.");
     }
 }

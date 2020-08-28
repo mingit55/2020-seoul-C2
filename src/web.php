@@ -31,6 +31,10 @@ Router::post("/delete/inventory/{id}", "ActionController@deleteInventory", "user
 Router::post("/update/inventory/{id}", "ActionController@updateInventory", "user");
 
 Router::post("/entry", "ActionController@insertArtwork");
+Router::get("/delete/artwork/{id}", "ActionController@deleteArtwork", "user");
+Router::post("/update/artwork/{id}", "ActionController@updateArtwork", "user");
+Router::post("/insert/score", "ActionController@insertScore", "user");
+Router::post("/delete-admin/artwork/{id}", "ActionController@deleteArtworkByAdmin", "admin");
 
 
 // 축제공지사항
@@ -43,9 +47,6 @@ Router::post("/update/notice/{id}", "ActionController@updateNotice", "admin");
 Router::get("/delete/notice/{id}", "ActionController@deleteNotice", "admin");
 Router::post("/insert/inquire", "ActionController@insertInquire", "user");
 Router::post("/insert/answer", "ActionController@insertAnswer", "admin");
-Router::get("/delete/artwork/{id}", "ActionController@deleteArtwork", "user");
-Router::post("/update/artwork/{id}", "ActionController@updateArtwork", "user");
-Router::post("/insert/score", "ActionCOntroller@insertScore", "user");
 
 // API
 Router::get("/api/users/{user_email}", "ApiController@getUser");
